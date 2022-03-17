@@ -19,8 +19,12 @@ async def CreateEmbed(Header, Desc, Body):
 async def Pulse():
     while True:
         messages = mb.fetch(criteria=AND(seen=False), mark_seen=True, charset="UTF-8")
+        
         for msg in messages:
-            embed = await CreateEmbed(msg.subject, msg.from_, msg.text[:350])
+            message = msg.text
+            if len(msg.text) > 350:
+                message = msg.text[:350]
+            embed = await CreateEmbed(msg.subject, msg.from_, message)
             await Send(embed)
             await asyncio.sleep(1)
         await asyncio.sleep(10)
