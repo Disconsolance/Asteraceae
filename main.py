@@ -3,6 +3,7 @@ from imap_tools import MailBox, AND
 import discord
 from discord.ext import commands
 from config import *
+from Utils.misc import Sanitize
 
 Aster = commands.Bot(command_prefix="*")
 mb = MailBox(SERVER).login(USERNAME, PASSWORD)
@@ -24,7 +25,7 @@ async def Pulse():
             message = msg.text
             if len(msg.text) > 350:
                 message = msg.text[:350]
-            embed = await CreateEmbed(msg.subject, msg.from_, message)
+            embed = await CreateEmbed(msg.subject, msg.from_, await Sanitize(message))
             await Send(embed)
             await asyncio.sleep(1)
         await asyncio.sleep(10)
