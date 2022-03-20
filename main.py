@@ -41,6 +41,7 @@ async def Pulse():
                 await asyncio.sleep(1)
         except:
             continue
+        mb.logout()
         await asyncio.sleep(10)
 
 @Aster.event
