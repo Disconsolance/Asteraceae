@@ -8,9 +8,14 @@ from Utils.misc import Sanitize
 Aster = commands.Bot(command_prefix="*")
 mb = MailBox(SERVER).login(USERNAME, PASSWORD)
 
-async def Send(payload):
+async def SendEmbed(payload):
     channel = Aster.get_channel(CHANNELID)
     await channel.send(embed=payload)
+
+async def SendFile(payload):
+    channel = Aster.get_channel(CHANNELID)
+    with open("mailbody.txt", "rb") as file:
+        await channel.send(embed=payload, file=discord.File(file, "mailbody.txt"))
 
 async def CreateEmbed(Header, Desc, Body):
     embed=discord.Embed(title=Header, description=Desc, color=0x8d9bbc)
@@ -24,9 +29,12 @@ async def Pulse():
         for msg in messages:
             message = msg.text
             if len(msg.text) > 350:
-                message = msg.text[:350]
-            embed = await CreateEmbed(msg.subject, msg.from_, await Sanitize(message))
-            await Send(embed)
+                with open("mailbody.txt", "w") as file:
+                    file.write(message)
+                embed = await CreateEmbed(msg.subject, msg.from_, "See attached file")
+            else:    
+                embed = await CreateEmbed(msg.subject, msg.from_, await Sanitize(message))
+                await SendEmbed(embed)
             await asyncio.sleep(1)
         await asyncio.sleep(10)
 
