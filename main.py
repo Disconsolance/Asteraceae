@@ -32,7 +32,7 @@ async def Pulse():
                 message = msg.text
                 if len(msg.text) > 350:
                     with open("mailbody.txt", "w") as file:
-                        file.write(message)
+                        file.write(await Sanitize(message))
                     embed = await CreateEmbed(msg.subject, msg.from_, "See attached file")
                     await SendFile(embed)
                 else:    
