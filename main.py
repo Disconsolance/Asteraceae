@@ -34,6 +34,7 @@ async def Pulse():
                     with open("mailbody.txt", "w") as file:
                         file.write(message)
                     embed = await CreateEmbed(msg.subject, msg.from_, "See attached file")
+                    await SendFile(embed)
                 else:    
                     embed = await CreateEmbed(msg.subject, msg.from_, await Sanitize(message))
                     await SendEmbed(embed)
