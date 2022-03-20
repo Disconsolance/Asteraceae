@@ -1,4 +1,5 @@
 import asyncio
+from mailbox import Mailbox
 from imap_tools import MailBox, AND
 import discord
 from discord.ext import commands
@@ -6,7 +7,6 @@ from config import *
 from Utils.misc import Sanitize
 
 Aster = commands.Bot(command_prefix="*")
-mb = MailBox(SERVER).login(USERNAME, PASSWORD)
 
 async def SendEmbed(payload):
     channel = Aster.get_channel(CHANNELID)
@@ -24,18 +24,22 @@ async def CreateEmbed(Header, Desc, Body):
 
 async def Pulse():
     while True:
+        mb = MailBox(SERVER).login(USERNAME, PASSWORD)
         messages = mb.fetch(criteria=AND(seen=False), mark_seen=True, charset="UTF-8")
         
-        for msg in messages:
-            message = msg.text
-            if len(msg.text) > 350:
-                with open("mailbody.txt", "w") as file:
-                    file.write(message)
-                embed = await CreateEmbed(msg.subject, msg.from_, "See attached file")
-            else:    
-                embed = await CreateEmbed(msg.subject, msg.from_, await Sanitize(message))
-                await SendEmbed(embed)
-            await asyncio.sleep(1)
+        try:
+            for msg in messages:
+                message = msg.text
+                if len(msg.text) > 350:
+                    with open("mailbody.txt", "w") as file:
+                        file.write(message)
+                    embed = await CreateEmbed(msg.subject, msg.from_, "See attached file")
+                else:    
+                    embed = await CreateEmbed(msg.subject, msg.from_, await Sanitize(message))
+                    await SendEmbed(embed)
+                await asyncio.sleep(1)
+        except:
+            continue
         await asyncio.sleep(10)
 
 @Aster.event
